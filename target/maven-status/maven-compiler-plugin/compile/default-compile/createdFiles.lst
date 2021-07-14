@@ -1,0 +1,5 @@
+com\restfully\shop\services\CustomerResource.class
+com\restfully\shop\services\AbstractCustomerResource.class
+com\restfully\shop\domain\Customer.class
+com\restfully\shop\services\ShoppingApplication.class
+com\restfully\shop\services\AbstractCustomerResource$1.class
