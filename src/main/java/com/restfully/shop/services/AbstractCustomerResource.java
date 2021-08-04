@@ -3,6 +3,7 @@ package com.restfully.shop.services;
 import com.restfully.shop.domain.Customer;
 
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
@@ -21,10 +22,14 @@ public abstract class AbstractCustomerResource {
     private AtomicInteger idCounter = new AtomicInteger();
 
     @POST
-    @Consumes("application/xml")
+    @Consumes({"application/xml","application/json"})
     public Response createCustomer(InputStream is)
     {
         System.out.println(is.toString());
+        if(JsonToObject.isJson(is))
+        {
+
+        }
         Customer customer = readCustomer(is);
         customer.setId(idCounter.incrementAndGet());
         customerDB.put(customer.getId(),customer);
@@ -61,9 +66,10 @@ public abstract class AbstractCustomerResource {
 
     @PUT
     @Path("{id}")
-    @Consumes("application/xml")
+    @Consumes({"application/xml","application/json"})
     public void updateCustomer(@jakarta.ws.rs.PathParam("id")int id, InputStream is)
     {
+
         Customer update = readCustomer(is);
         Customer current = customerDB.get(id);
         if(current == null)

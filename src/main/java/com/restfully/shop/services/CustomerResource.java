@@ -10,6 +10,10 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Unmarshaller;
+
+import javax.xml.XMLConstants;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 import java.io.*;
 
 @Path("/customers")
@@ -28,9 +32,10 @@ public class CustomerResource extends AbstractCustomerResource{
         writer.println("<country>" + customer.getCountry() + "</country>");
         writer.println("</customer>");
     }
-
+/*
     @Override
-    protected Customer readCustomer(InputStream is) {
+    protected Customer readCustomer(InputStream is)
+    {
         try{
             JAXBContext jaxbContext = JAXBContext.newInstance(Customer.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -45,6 +50,37 @@ public class CustomerResource extends AbstractCustomerResource{
             throw new WebApplicationException(exception, Response.Status.BAD_REQUEST);
         }
     }
+*/
+    protected Customer readCustomer(InputStream is)
+    {
+        try
+        {
+            if(JsonToObject.isJson(is))
+            {
+                return (Customer)JsonToObject.convertJsonToObject(is,Customer.class,"");
+            }
+        }
+        catch (Exception exception)
+        {
+            throw new WebApplicationException(exception, Response.Status.BAD_REQUEST);
+        }
+        try
+        {
+            JAXBContext jaxbContext = JAXBContext.newInstance(Customer.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Schema customerSchema =  schemaFactory.newSchema(new File(""));
+            unmarshaller.setSchema(customerSchema);
+
+            return (Customer) unmarshaller.unmarshal(is);
+        }
+        catch (Exception exception)
+        {
+            throw new WebApplicationException(exception, Response.Status.BAD_REQUEST);
+        }
+    }
+
 }
 
 
