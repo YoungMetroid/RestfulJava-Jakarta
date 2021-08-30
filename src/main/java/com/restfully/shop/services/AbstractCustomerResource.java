@@ -1,5 +1,7 @@
 package com.restfully.shop.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.restfully.shop.api.DirectoryPaths;
 import com.restfully.shop.domain.Customer;
 
 import jakarta.ws.rs.*;
@@ -7,10 +9,11 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import javax.servlet.ServletContext;
+import java.io.*;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -21,20 +24,44 @@ public abstract class AbstractCustomerResource {
             new ConcurrentHashMap<Integer,Customer>();
     private AtomicInteger idCounter = new AtomicInteger();
 
+    protected  DirectoryPaths directoryPaths;
+    public AbstractCustomerResource()
+    {
+        try
+        {
+            directoryPaths = DirectoryPaths.getInstance();
+        }
+        catch (UnsupportedEncodingException ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
     @POST
-    @Consumes({"application/xml","application/json"})
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response createCustomer(InputStream is)
     {
         System.out.println(is.toString());
-        if(JsonToObject.isJson(is))
-        {
-
-        }
         Customer customer = readCustomer(is);
+        System.out.println("Got Customer");
+        System.out.println("Setting id");
         customer.setId(idCounter.incrementAndGet());
         customerDB.put(customer.getId(),customer);
+        ObjectMapper Obj = new ObjectMapper();
+        String jsonString = null;
+        try {
+            jsonString =  Obj.writeValueAsString(customer);
+        }
+        catch (IOException exception)
+        {
+            exception.printStackTrace();
+        }
         System.out.println("Created customer " + customer.getId());;
-        return Response.created(URI.create("/customers/" + customer.getId())).build();
+        return Response.created(URI.create("customers/" + customer.getId())).
+                entity(jsonString).
+                type(MediaType.APPLICATION_XML).build();
+
+
     }
 
     @GET
@@ -62,6 +89,13 @@ public abstract class AbstractCustomerResource {
     {
         String result = "<h1>RESTful Demo Application</h1>In real world application, a collection of users will be returned !!";
         return Response.status(200).entity(result).build();
+    }
+
+    @GET
+    @Path("/GetResourcePath")
+    public Response getResourcePath()
+    {
+        return Response.status(200).entity(directoryPaths.getRootPath()).build();
     }
 
     @PUT

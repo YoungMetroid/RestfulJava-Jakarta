@@ -14,14 +14,15 @@ import java.util.Set;
 public class JsonToObject {
 
 
-    public static boolean isJson(InputStream inputStream)
+    public static boolean isJson(byte[] inputArray)
     {
         try
         {
-            String jsonString = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            String jsonString = new String(inputArray, StandardCharsets.UTF_8);
             String trimmedJsonString = jsonString.trim();
             if(trimmedJsonString.startsWith("{"))
             {
+                System.out.println("Is json");
                 return true;
             }
 
@@ -32,29 +33,42 @@ public class JsonToObject {
         }
         return false;
     }
-    public static Object convertJsonToObject(InputStream inputStream, Class<?> objectClass, String schemaPath)
-            throws IOException, ClassNotFoundException
-    {
-        String jsonString = new String(inputStream.readAllBytes(),StandardCharsets.UTF_8);
-        InputStream newStream = new ByteArrayInputStream(jsonString.getBytes(StandardCharsets.UTF_8));
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonSchemaFactory schemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V201909);
+    public static Object convertJsonToObject(byte[] inputArray, Class<?> objectClass, String schemaPath)   {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonSchemaFactory schemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V201909);
+            File schemaFile = new File(schemaPath);
+            InputStream schemaStream = new FileInputStream(schemaFile);
+            JsonNode jsonNode = objectMapper.readTree(inputArray);
+            JsonSchema schema = schemaFactory.getSchema(schemaStream);
+            if(jsonNode == null)
+            {
+                System.out.println("JsonNode is null");
+            }
+            if(schema == null)
+            {
+                System.out.println("Schema is null");
+            }
+            Set<ValidationMessage> validationResult = schema.validate(jsonNode);
 
-        File schemaFile = new File(schemaPath);
-        InputStream schemaStream = new FileInputStream(schemaFile);
-
-        JsonNode jsonNode = objectMapper.readTree(newStream);
-        JsonSchema schema = schemaFactory.getSchema(schemaStream);
-        Set<ValidationMessage> validationResult = schema.validate(jsonNode);
-
-        if (validationResult.isEmpty())
+            if (validationResult.isEmpty())
+            {
+                Object obj = objectMapper.readValue(inputArray, objectClass);
+                System.out.println(obj.toString());
+                return obj;
+            }
+        }
+        catch (IOException ex)
         {
-            Class<?> cls = Class.forName(objectClass.getName());
-            Object obj = objectMapper.readValue(jsonString,cls);
-            System.out.println(obj.toString());
-            return obj;
+            ex.printStackTrace();
+        }
+        catch (Exception exception)
+        {
+            System.out.println("Unknown exception: " + exception.getMessage());
+            exception.printStackTrace();
         }
 
+        System.out.println("ValidationResult is not empty");
         return null;
     }
 

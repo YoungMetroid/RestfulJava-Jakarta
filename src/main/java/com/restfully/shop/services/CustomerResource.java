@@ -9,7 +9,10 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
+import org.mortbay.jetty.HttpParser;
+import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
@@ -31,6 +34,7 @@ public class CustomerResource extends AbstractCustomerResource{
         writer.println("<zip>" + customer.getZip() + "</zip>");
         writer.println("<country>" + customer.getCountry() + "</country>");
         writer.println("</customer>");
+
     }
 /*
     @Override
@@ -51,36 +55,55 @@ public class CustomerResource extends AbstractCustomerResource{
         }
     }
 */
+    @Override
     protected Customer readCustomer(InputStream is)
     {
+
         try
         {
-            if(JsonToObject.isJson(is))
+            byte []inputArray = is.readAllBytes();
+            if(JsonToObject.isJson(inputArray))
             {
-                return (Customer)JsonToObject.convertJsonToObject(is,Customer.class,"");
+                Customer customer =  (Customer)JsonToObject.convertJsonToObject(inputArray,Customer.class, directoryPaths.getSchemasPath()+directoryPaths.CUSTOMERJSON);
+                if(customer == null)
+                {
+                    throw new WebApplicationException("Unable to convert the InputStream to a Customer object, returned object is null",Response.Status.BAD_REQUEST);
+                }
+                return customer;
             }
-        }
-        catch (Exception exception)
-        {
-            throw new WebApplicationException(exception, Response.Status.BAD_REQUEST);
-        }
-        try
-        {
+
+
             JAXBContext jaxbContext = JAXBContext.newInstance(Customer.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema customerSchema =  schemaFactory.newSchema(new File(""));
+            Schema customerSchema =  schemaFactory.newSchema(new File(directoryPaths.getSchemasPath()+directoryPaths.CUSTOMERXSD));
             unmarshaller.setSchema(customerSchema);
 
-            return (Customer) unmarshaller.unmarshal(is);
+            InputStream targetStream = new ByteArrayInputStream(inputArray);
+            return (Customer) unmarshaller.unmarshal(targetStream);
+
         }
-        catch (Exception exception)
+        catch (IOException exception)
         {
+            System.out.println("Json Error");
             throw new WebApplicationException(exception, Response.Status.BAD_REQUEST);
         }
-    }
+        catch (JAXBException | SAXException exception)
+        {
+            String message = "";
+            if(exception.getClass() == JAXBException.class)
+            {
+                message = "Exception of type JAXB";
+            }
+            else
+            {
+                message = "Exception of type SAX";
+            }
+            throw new WebApplicationException(message,exception, Response.Status.BAD_REQUEST);
+        }
 
+    }
 }
 
 

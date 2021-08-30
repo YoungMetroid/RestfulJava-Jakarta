@@ -1,4 +1,6 @@
-C:\Users\felipe.elizalde\Documents\GitHub\RestfulJava-Jakarta\src\main\java\com\restfully\shop\services\ShoppingApplication.java
-C:\Users\felipe.elizalde\Documents\GitHub\RestfulJava-Jakarta\src\main\java\com\restfully\shop\services\CustomerResource.java
-C:\Users\felipe.elizalde\Documents\GitHub\RestfulJava-Jakarta\src\main\java\com\restfully\shop\services\AbstractCustomerResource.java
-C:\Users\felipe.elizalde\Documents\GitHub\RestfulJava-Jakarta\src\main\java\com\restfully\shop\domain\Customer.java
+E:\GitHub\RestfulJava Jakarta\src\main\java\com\restfully\shop\api\DirectoryPaths.java
+E:\GitHub\RestfulJava Jakarta\src\main\java\com\restfully\shop\services\CustomerResource.java
+E:\GitHub\RestfulJava Jakarta\src\main\java\com\restfully\shop\services\AbstractCustomerResource.java
+E:\GitHub\RestfulJava Jakarta\src\main\java\com\restfully\shop\services\ShoppingApplication.java
+E:\GitHub\RestfulJava Jakarta\src\main\java\com\restfully\shop\domain\Customer.java
+E:\GitHub\RestfulJava Jakarta\src\main\java\com\restfully\shop\services\JsonToObject.java

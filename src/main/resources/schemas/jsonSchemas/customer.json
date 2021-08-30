@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title" : "Customer",
+  "description" : "The customer object class",
+  "type" : "object",
+
+  "properties" :
+  {
+      "firstName":
+      {
+        "description": "The first name of the customer",
+        "type" : "string"
+      },
+
+      "lastName" :
+      {
+        "description": "The last name of the customer",
+        "type" : "string"
+      },
+
+      "street" :
+      {
+        "description": "The street name and number of the customer",
+        "type" : "string"
+      },
+
+      "city" :
+      {
+        "description": "The city of the customer",
+        "type" : "string"
+      },
+
+      "state" :
+      {
+        "description": "The state of the customer",
+        "type" : "string"
+      },
+
+      "zip" :
+      {
+        "description": "The zip number of the customer",
+        "type" : "string"
+      },
+
+      "country":
+      {
+        "description": "The country of the customer",
+        "type": "string"
+      }
+
+  }
+}
