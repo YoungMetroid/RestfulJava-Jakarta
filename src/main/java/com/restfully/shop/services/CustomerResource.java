@@ -5,14 +5,21 @@ package com.restfully.shop.services;
 
 
 import com.restfully.shop.domain.Customer;
+import io.vavr.Tuple;
+import io.vavr.Tuple1;
+import io.vavr.Tuple2;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.mortbay.jetty.HttpParser;
 import org.xml.sax.SAXException;
+
+
 
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
@@ -56,9 +63,8 @@ public class CustomerResource extends AbstractCustomerResource{
     }
 */
     @Override
-    protected Customer readCustomer(InputStream is)
+    protected Tuple2<Customer,Boolean> readCustomer(InputStream is)
     {
-
         try
         {
             byte []inputArray = is.readAllBytes();
@@ -69,10 +75,10 @@ public class CustomerResource extends AbstractCustomerResource{
                 {
                     throw new WebApplicationException("Unable to convert the InputStream to a Customer object, returned object is null",Response.Status.BAD_REQUEST);
                 }
-                return customer;
+
+
+                return new Tuple2<>(customer,true);
             }
-
-
             JAXBContext jaxbContext = JAXBContext.newInstance(Customer.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 
@@ -81,8 +87,7 @@ public class CustomerResource extends AbstractCustomerResource{
             unmarshaller.setSchema(customerSchema);
 
             InputStream targetStream = new ByteArrayInputStream(inputArray);
-            return (Customer) unmarshaller.unmarshal(targetStream);
-
+            return new Tuple2<>((Customer) unmarshaller.unmarshal(targetStream),false);
         }
         catch (IOException exception)
         {
@@ -102,7 +107,6 @@ public class CustomerResource extends AbstractCustomerResource{
             }
             throw new WebApplicationException(message,exception, Response.Status.BAD_REQUEST);
         }
-
     }
 }
 

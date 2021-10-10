@@ -95,6 +95,14 @@
             <version>3.3.1</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/io.vavr/vavr -->
+        <dependency>
+            <groupId>io.vavr</groupId>
+            <artifactId>vavr</artifactId>
+            <version>0.10.4</version>
+        </dependency>
+
+
         <dependency>
             <groupId> org.apache.cassandra</groupId>
             <artifactId>cassandra-all</artifactId>

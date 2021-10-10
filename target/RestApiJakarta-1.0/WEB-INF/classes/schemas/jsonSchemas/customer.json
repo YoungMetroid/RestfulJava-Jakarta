@@ -6,12 +6,6 @@
 
   "properties" :
   {
-      "id":
-      {
-        "description": "This is the unique identifier for the customer",
-        "type": "integer"
-      },
-
       "firstName":
       {
         "description": "The first name of the customer",

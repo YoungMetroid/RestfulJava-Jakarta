@@ -4,16 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.restfully.shop.api.DirectoryPaths;
 import com.restfully.shop.domain.Customer;
 
+import io.vavr.Tuple2;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 
-import javax.servlet.ServletContext;
+
 import java.io.*;
 import java.net.URI;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -42,9 +41,10 @@ public abstract class AbstractCustomerResource {
     public Response createCustomer(InputStream is)
     {
         System.out.println(is.toString());
-        Customer customer = readCustomer(is);
-        System.out.println("Got Customer");
-        System.out.println("Setting id");
+        Tuple2<Customer, Boolean> tuple2 = readCustomer(is);
+        Customer customer = (Customer) tuple2._1();
+        boolean isJson = tuple2._2();
+
         customer.setId(idCounter.incrementAndGet());
         customerDB.put(customer.getId(),customer);
         ObjectMapper Obj = new ObjectMapper();
@@ -56,7 +56,13 @@ public abstract class AbstractCustomerResource {
         {
             exception.printStackTrace();
         }
-        System.out.println("Created customer " + customer.getId());;
+        System.out.println("Created customer " + customer.getId());
+
+        if(isJson)
+        return Response.created(URI.create("customers/" + customer.getId())).
+                entity(jsonString).
+                type(MediaType.APPLICATION_JSON).build();
+
         return Response.created(URI.create("customers/" + customer.getId())).
                 entity(jsonString).
                 type(MediaType.APPLICATION_XML).build();
@@ -104,7 +110,8 @@ public abstract class AbstractCustomerResource {
     public void updateCustomer(@jakarta.ws.rs.PathParam("id")int id, InputStream is)
     {
 
-        Customer update = readCustomer(is);
+        Tuple2<Customer,Boolean> tuple2 = readCustomer(is);
+        Customer update = tuple2._1();
         Customer current = customerDB.get(id);
         if(current == null)
             throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -120,6 +127,6 @@ public abstract class AbstractCustomerResource {
     abstract protected void outputCustomer(OutputStream os,
                                            Customer cust) throws IOException;
 
-    abstract protected Customer readCustomer(InputStream is);
+    abstract protected Tuple2<Customer,Boolean> readCustomer(InputStream is);
 
 }
