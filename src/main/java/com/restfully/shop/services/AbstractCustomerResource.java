@@ -59,9 +59,11 @@ public abstract class AbstractCustomerResource {
         System.out.println("Created customer " + customer.getId());
 
         if(isJson)
-        return Response.created(URI.create("customers/" + customer.getId())).
+        {
+            return Response.created(URI.create("customers/" + customer.getId())).
                 entity(jsonString).
                 type(MediaType.APPLICATION_JSON).build();
+        }
 
         return Response.created(URI.create("customers/" + customer.getId())).
                 entity(jsonString).
