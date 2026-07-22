@@ -9,6 +9,7 @@
         <module name="RestfulJava - Copy" />
         <module name="RestfulJava Jakarta" />
         <module name="RestfulJava" />
+        <module name="RestApiJakarta" />
       </profile>
     </annotationProcessing>
   </component>

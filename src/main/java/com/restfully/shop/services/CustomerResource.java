@@ -5,8 +5,6 @@ package com.restfully.shop.services;
 
 
 import com.restfully.shop.domain.Customer;
-import io.vavr.Tuple;
-import io.vavr.Tuple1;
 import io.vavr.Tuple2;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.WebApplicationException;
@@ -15,11 +13,7 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.mortbay.jetty.HttpParser;
 import org.xml.sax.SAXException;
-
-
 
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;

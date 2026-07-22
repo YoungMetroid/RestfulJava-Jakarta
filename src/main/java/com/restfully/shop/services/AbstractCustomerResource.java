@@ -57,6 +57,7 @@ public abstract class AbstractCustomerResource {
             exception.printStackTrace();
         }
         System.out.println("Created customer " + customer.getId());
+        System.out.println(URI.create("customers/" + customer.getId()));
 
         if(isJson)
         return Response.created(URI.create("customers/" + customer.getId())).
@@ -75,6 +76,7 @@ public abstract class AbstractCustomerResource {
     @Produces("application/xml")
     public StreamingOutput getCustomer(@jakarta.ws.rs.PathParam("id")int id)
     {
+        System.out.println(id);
         final Customer customer = customerDB.get(id);
         if(customer == null)
         {
@@ -91,10 +93,12 @@ public abstract class AbstractCustomerResource {
 
     @GET
     @Path("/test")
+    @Produces("text/html")
     public Response getHelloWorld()
     {
+        System.out.println("Trying to return test hello world");
         String result = "<h1>RESTful Demo Application</h1>In real world application, a collection of users will be returned !!";
-        return Response.status(200).entity(result).build();
+        return Response.status(200).entity(result).type("text/html").build();
     }
 
     @GET
